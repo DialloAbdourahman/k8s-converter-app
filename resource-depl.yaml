@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resource
+  template:
+    metadata:
+      labels:
+        app: resource
+    spec:
+      containers:
+        - name: resource
+          image: dialloabdourahman/resource-converter:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MONGO_URI
+              value: "mongodb://resource-mongo-srv:27017/resource"
+            - name: RABBITMQ_URL
+              value: "amqp://user:password@rabbitmq-srv:5672"
+            - name: ACCESS_TOKEN_JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-converter-secret
+                  key: ACCESS_TOKEN_JWT_KEY
+            - name: AWS_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: aws-converter-secret
+                  key: AWS_BUCKET_NAME
+            - name: AWS_BUCKET_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: aws-converter-secret
+                  key: AWS_BUCKET_REGION
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-converter-secret
+                  key: AWS_ACCESS_KEY
+            - name: AWS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-converter-secret
+                  key: AWS_SECRET_KEY
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resource-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: resource
+  ports:
+    - name: resource
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth
+          image: dialloabdourahman/auth-converter:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MONGO_URI
+              value: "mongodb://auth-mongo-srv:27017/auth"
+            - name: RABBITMQ_URL
+              value: "amqp://user:password@rabbitmq-srv:5672"
+            - name: ACCESS_TOKEN_JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-converter-secret
+                  key: ACCESS_TOKEN_JWT_KEY
+            - name: REFRESH_TOKEN_JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-converter-secret
+                  key: REFRESH_TOKEN_JWT_KEY
+            - name: ACCESS_TOKEN_EXPIRATION
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-converter-secret
+                  key: ACCESS_TOKEN_EXPIRATION
+            - name: REFRESH_TOKEN_EXPIRATION
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-converter-secret
+                  key: REFRESH_TOKEN_EXPIRATION
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: auth
+  ports:
+    - name: auth
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
