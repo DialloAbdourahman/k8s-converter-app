@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification
+  template:
+    metadata:
+      labels:
+        app: notification
+    spec:
+      containers:
+        - name: notification
+          image: dialloabdourahman/notification-converter:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: RABBITMQ_URL
+              value: "amqp://user:password@rabbitmq-srv:5672"
+            - name: RESOURCE_PAGE_URL
+              value: http://localhost/resources
+            - name: ACCESS_TOKEN_JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-converter-secret
+                  key: ACCESS_TOKEN_JWT_KEY
+            - name: AWS_SES_SMTP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: aws-converter-secret
+                  key: AWS_SES_SMTP_USERNAME
+            - name: AWS_SES_SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: aws-converter-secret
+                  key: AWS_SES_SMTP_PASSWORD
+            - name: AWS_SES_SMTP_SENDER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: aws-converter-secret
+                  key: AWS_SES_SMTP_SENDER_EMAIL
