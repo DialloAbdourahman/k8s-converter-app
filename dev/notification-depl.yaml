@@ -20,7 +20,7 @@ spec:
             - name: RABBITMQ_URL
               value: "amqp://user:password@rabbitmq-srv:5672"
             - name: RESOURCE_PAGE_URL
-              value: http://localhost/resources
+              value: http://localhost/resource
             - name: ACCESS_TOKEN_JWT_KEY
               valueFrom:
                 secretKeyRef:
