@@ -41,6 +41,16 @@ spec:
                 secretKeyRef:
                   name: jwt-converter-secret
                   key: REFRESH_TOKEN_EXPIRATION
+            - name: ACTIVATE_ACCOUNT_JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-converter-secret
+                  key: ACTIVATE_ACCOUNT_JWT_KEY
+            - name: FORGOT_PASSWORD_JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-converter-secret
+                  key: FORGOT_PASSWORD_JWT_KEY
 
 ---
 apiVersion: v1
